@@ -752,11 +752,117 @@ Host: localhost:8080
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_주문하기">주문하기</h2>
+<div class="sectionbody">
+<div class="sect3">
+<h4 id="_요청_예시_6">요청 예시</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /orders/save HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_응답_예시_6">응답 예시</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code>{
+  "success" : true,
+  "response" : {
+    "id" : 2,
+    "products" : [ {
+      "id" : 1,
+      "productName" : "기본에 슬라이딩 지퍼백 크리스마스/플라워에디션 에디션 외 주방용품 특가전",
+      "items" : [ {
+        "id" : 4,
+        "optionName" : "01. 슬라이딩 지퍼백 크리스마스에디션 4종",
+        "quantity" : 5,
+        "price" : 50000
+      }, {
+        "id" : 5,
+        "optionName" : "02. 슬라이딩 지퍼백 플라워에디션 5종",
+        "quantity" : 1,
+        "price" : 10900
+      } ]
+    }, {
+      "id" : 4,
+      "productName" : "바른 누룽지맛 발효효소 2박스 역가수치보장 / 외 7종",
+      "items" : [ {
+        "id" : 6,
+        "optionName" : "선택02_바른곡물효소누룽지맛 6박스",
+        "quantity" : 5,
+        "price" : 250000
+      } ]
+    } ],
+    "totalPrice" : 310900
+  },
+  "error" : null
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_결제하기">결제하기</h2>
+<div class="sectionbody">
+<div class="sect3">
+<h4 id="_요청_예시_7">요청 예시</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /orders/1 HTTP/1.1
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_응답_예시_7">응답 예시</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code>{
+  "success" : true,
+  "response" : {
+    "id" : 1,
+    "products" : [ {
+      "id" : 1,
+      "productName" : "기본에 슬라이딩 지퍼백 크리스마스/플라워에디션 에디션 외 주방용품 특가전",
+      "items" : [ {
+        "id" : 1,
+        "optionName" : "01. 슬라이딩 지퍼백 크리스마스에디션 4종",
+        "quantity" : 5,
+        "price" : 50000
+      }, {
+        "id" : 2,
+        "optionName" : "02. 슬라이딩 지퍼백 플라워에디션 5종",
+        "quantity" : 1,
+        "price" : 10900
+      } ]
+    }, {
+      "id" : 4,
+      "productName" : "바른 누룽지맛 발효효소 2박스 역가수치보장 / 외 7종",
+      "items" : [ {
+        "id" : 3,
+        "optionName" : "선택02_바른곡물효소누룽지맛 6박스",
+        "quantity" : 5,
+        "price" : 250000
+      } ]
+    } ],
+    "totalPrice" : 310900
+  },
+  "error" : null
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2023-07-24 01:15:46 +0900
+Last updated 2023-08-01 12:35:32 +0900
 </div>
 </div>
 </body>

@@ -30,7 +30,7 @@ public class CartRestControllerTest extends MyRestDoc {
     @Autowired
     private ObjectMapper om;
 
-    @WithUserDetails(value = "ssarmango@nate.com")
+    @WithUserDetails(value = "ssar@nate.com")
     @Test
     public void addCartList_test() throws Exception {
         // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
@@ -57,7 +57,70 @@ public class CartRestControllerTest extends MyRestDoc {
         resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
-    @WithUserDetails(value = "ssarmango@nate.com")
+    @WithUserDetails(value = "ssar@nate.com")
+    @Test
+    public void addCartListFail1_test() throws Exception{
+        //given
+        List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
+        CartRequest.SaveDTO item1 = new CartRequest.SaveDTO();
+        CartRequest.SaveDTO item2 = new CartRequest.SaveDTO();
+
+        item1.setOptionId(1);
+        item1.setQuantity(5);
+
+        item2.setOptionId(1);
+        item2.setQuantity(3);
+        //동일 옵션을 추가
+
+        requestDTOs.add(item1);
+        requestDTOs.add(item2);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        //when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/add")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andExpect(jsonPath("$.error.message").value("중복되는 옵션이 존재합니다."));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
+    @WithUserDetails(value = "ssar@nate.com")
+    @Test
+    public void addCartListFail2_test() throws Exception{
+        //given
+        List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
+        CartRequest.SaveDTO item = new CartRequest.SaveDTO();
+        item.setOptionId(100); //존재하지 않는 option id
+        item.setQuantity(5);
+
+        requestDTOs.add(item);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        //when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/add")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        //then
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
+    @WithUserDetails(value = "ssar@nate.com")
     @Test
     public void findAll_test() throws Exception {
         // given teardown
@@ -85,15 +148,22 @@ public class CartRestControllerTest extends MyRestDoc {
         resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
-    @WithUserDetails(value = "ssarmango@nate.com")
+    @WithUserDetails(value = "ssar@nate.com")
     @Test
     public void update_test() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
         List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
-        CartRequest.UpdateDTO item = new CartRequest.UpdateDTO();
-        item.setCartId(1);
-        item.setQuantity(10);
-        requestDTOs.add(item);
+        CartRequest.UpdateDTO item1 = new CartRequest.UpdateDTO();
+        CartRequest.UpdateDTO item2 = new CartRequest.UpdateDTO();
+
+        item1.setCartId(1);
+        item1.setQuantity(10);
+
+        item2.setCartId(2);
+        item2.setQuantity(10);
+
+        requestDTOs.add(item1);
+        requestDTOs.add(item2);
 
         String requestBody = om.writeValueAsString(requestDTOs);
 
@@ -116,6 +186,69 @@ public class CartRestControllerTest extends MyRestDoc {
         resultActions.andExpect(jsonPath("$.response.carts[0].quantity").value(10));
         resultActions.andExpect(jsonPath("$.response.carts[0].price").value(100000));
         resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
+    //동일한 장바구니 아이디가 두번 들어오면 예외처리
+    @WithUserDetails(value = "ssar@nate.com")
+    @Test
+    public void updateFail1_test() throws Exception{
+        //given
+        List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
+        CartRequest.UpdateDTO item1 = new CartRequest.UpdateDTO();
+        CartRequest.UpdateDTO item2 = new CartRequest.UpdateDTO();
+
+        item1.setCartId(1);
+        item1.setQuantity(10);
+
+        item2.setCartId(1);
+        item2.setQuantity(10);
+
+        requestDTOs.add(item1);
+        requestDTOs.add(item2);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/update")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
+    //유저 장바구니에 없는 cartId가 들어오면 예외처리
+    @WithUserDetails(value = "ssar@nate.com")
+    @Test
+    public void updateFail2_test() throws Exception{
+        //given
+        List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
+        CartRequest.UpdateDTO item = new CartRequest.UpdateDTO();
+        item.setCartId(4);
+        item.setQuantity(10);
+
+        requestDTOs.add(item);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/update")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+
     }
 
 }

@@ -66,4 +66,24 @@ public class ProductRestControllerTest extends MyRestDoc {
         resultActions.andExpect(jsonPath("$.response.price").value(1000));
         resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
+
+    @Test
+    public void findByIdFail_test() throws Exception {
+        // given teardown.sql
+        int id = 100;
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                get("/products/" + id)
+        );
+
+        // console
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : "+responseBody);
+
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
+
 }
