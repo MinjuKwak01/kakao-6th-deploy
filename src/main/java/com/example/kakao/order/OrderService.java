@@ -1,6 +1,7 @@
 package com.example.kakao.order;
 
 import com.example.kakao._core.errors.exception.Exception400;
+import com.example.kakao._core.errors.exception.Exception401;
 import com.example.kakao._core.errors.exception.Exception404;
 import com.example.kakao.cart.Cart;
 import com.example.kakao.cart.CartJPARepository;
@@ -58,11 +59,16 @@ public class OrderService {
     }
 
 
-    public OrderResponse.findByIdDTO findById(int id){
+    public OrderResponse.findByIdDTO findById(int id, User sessionUser){
 
         Order order = orderJPARepository.findOrderById(id).orElseThrow(
                 ()-> new Exception400("해당 주문을 찾을 수 없습니다 : "+ id)
         );
+
+        if(order.getUser().getId() != sessionUser.getId()){
+            throw new Exception401("인증이 안되어있습니다.");
+        }
+
         List<Item> itemList = itemJPARepository.mFindItemIdByJoin(order.getId());
 
         return new OrderResponse.findByIdDTO(order, itemList);
