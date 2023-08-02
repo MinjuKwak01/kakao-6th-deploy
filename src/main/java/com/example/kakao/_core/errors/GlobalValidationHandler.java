@@ -23,8 +23,7 @@ public class GlobalValidationHandler {
                 Errors errors = (Errors) arg;
 
                 if (errors.hasErrors()) {
-                    throw new Exception400(
-                            errors.getFieldErrors().get(0).getDefaultMessage()+":"+errors.getFieldErrors().get(0).getField()
+                    throw new Exception400(errors.getFieldErrors().get(0).getDefaultMessage()+":"+errors.getFieldErrors().get(0).getField()
                     );
                 }
             }
